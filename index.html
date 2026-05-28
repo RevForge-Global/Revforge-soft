@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RevForge — LTD Platform Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Exo+2:wght@300;400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #02040a;
+  --card: #080e1c;
+  --border: #0d1f3c;
+  --accent: #00ffcc;
+  --accent2: #ff4500;
+  --purple: #9d00ff;
+  --gold: #ffcc00;
+  --text: #ddeeff;
+  --muted: #4a6580;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* PARTICLE CANVAS */
+#canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* NOISE OVERLAY */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+}
+
+.wrap { position: relative; z-index: 10; }
+
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  padding: 80px 20px 50px;
+  position: relative;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  letter-spacing: 6px;
+  color: var(--accent);
+  text-transform: uppercase;
+  padding: 6px 20px;
+  border: 1px solid rgba(0,255,204,0.2);
+  border-radius: 2px;
+  margin-bottom: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  position: absolute;
+  left: -100%;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,255,204,0.1), transparent);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+.hero-title {
+  font-family: 'Black Ops One', sans-serif;
+  font-size: clamp(52px, 12vw, 120px);
+  line-height: 0.85;
+  letter-spacing: 6px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.hero-title .line1 {
+  display: block;
+  color: #fff;
+  text-shadow: 0 0 60px rgba(255,255,255,0.1);
+}
+
+.hero-title .line2 {
+  display: block;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 50%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(0,255,204,0.4));
+  animation: gradShift 4s ease-in-out infinite alternate;
+}
+
+@keyframes gradShift {
+  0% { filter: drop-shadow(0 0 20px rgba(0,255,204,0.4)); }
+  100% { filter: drop-shadow(0 0 30px rgba(157,0,255,0.5)); }
+}
+
+.hero-sub {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(10px, 2vw, 14px);
+  letter-spacing: 6px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 50px;
+}
+
+.hero-sub em { color: var(--accent2); font-style: normal; }
+
+/* STAT PILLS */
+.stat-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 28px;
+  background: linear-gradient(135deg, rgba(0,255,204,0.04) 0%, rgba(157,0,255,0.04) 100%);
+  border: 1px solid rgba(0,255,204,0.12);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.stat-pill:hover {
+  border-color: rgba(0,255,204,0.4);
+  background: rgba(0,255,204,0.07);
+  transform: translateY(-2px);
+}
+
+.stat-pill::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.stat-pill:hover::before { opacity: 1; }
+
+.stat-n {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.stat-l {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+  padding: 0 20px;
+}
+
+.sh-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border)); }
+.sh-line.r { background: linear-gradient(90deg, var(--border), transparent); }
+
+.sh-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ===== PLATFORM GRID ===== */
+.grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+/* Top card spans full width */
+.card-1 { grid-column: span 12; }
+/* Cards 2-3 span 6 */
+.card-2, .card-3 { grid-column: span 6; }
+/* Cards 4-5 span 4 */
+.card-4, .card-5 { grid-column: span 6; }
+
+@media (max-width: 768px) {
+  .card-1, .card-2, .card-3, .card-4, .card-5 { grid-column: span 12; }
+}
+
+.pcard {
+  position: relative;
+  background: var(--card);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+
+/* Left accent bar */
+.pcard::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--card-accent, var(--accent));
+  transition: width 0.3s, opacity 0.3s;
+  opacity: 0.6;
+}
+
+.pcard:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--card-accent, var(--accent));
+}
+
+.pcard:hover::before { width: 4px; opacity: 1; }
+
+/* Top glow line */
+.pcard::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 3px; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--card-accent, var(--accent)), transparent);
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+
+.pcard:hover::after { opacity: 0.8; }
+
+/* Card accent colors */
+.pcard.gold { --card-accent: var(--gold); }
+.pcard.silver { --card-accent: #b0c4de; }
+.pcard.bronze { --card-accent: #cd7f32; }
+.pcard.blue { --card-accent: #4488ff; }
+.pcard.teal { --card-accent: #00aaff; }
+
+.pcard-inner {
+  padding: 28px 28px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Horizontal layout for card-1 */
+.card-1 .pcard-inner {
+  flex-direction: row;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.card-1 .pcard-left { flex: 1; min-width: 280px; }
+.card-1 .pcard-right { flex: 1; min-width: 240px; }
+
+/* Rank number bg */
+.rank-bg {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 100px;
+  color: rgba(255,255,255,0.02);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.3s;
+}
+
+.card-1 .rank-bg { font-size: 140px; right: 30px; }
+.pcard:hover .rank-bg { color: rgba(255,255,255,0.04); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  border: 1px solid currentColor;
+}
+
+.badge.gold { color: var(--gold); background: rgba(255,204,0,0.06); }
+.badge.silver { color: #b0c4de; background: rgba(176,196,222,0.06); }
+.badge.bronze { color: #cd7f32; background: rgba(205,127,50,0.06); }
+.badge.blue { color: #4488ff; background: rgba(68,136,255,0.06); }
+.badge.teal { color: #00aaff; background: rgba(0,170,255,0.06); }
+
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: blink 1.5s step-end infinite; }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+
+.pname {
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 36px;
+  letter-spacing: 3px;
+  line-height: 1;
+  margin-bottom: 6px;
+  transition: color 0.3s;
+}
+
+.card-1 .pname { font-size: 52px; }
+
+.purl {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  opacity: 0.6;
+  margin-bottom: 16px;
+  transition: opacity 0.3s;
+}
+
+.pcard:hover .purl { opacity: 1; }
+
+.pdesc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.ptags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.ptag {
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  font-family: 'Orbitron', monospace;
+  text-transform: uppercase;
+}
+
+.pbtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.3s;
+}
+
+.pcard:hover .pbtn {
+  border-color: var(--card-accent, var(--accent));
+  color: var(--card-accent, var(--accent));
+  background: rgba(255,255,255,0.04);
+}
+
+.pbtn-arrow { font-size: 14px; transition: transform 0.3s; }
+.pcard:hover .pbtn-arrow { transform: translateX(5px); }
+
+/* Stats inside card-1 */
+.card-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cs-item {
+  padding: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.cs-n {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.cs-l {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ===== REVENUE SECTION ===== */
+.rev-section {
+  max-width: 1100px;
+  margin: 0 auto 80px;
+  padding: 0 20px;
+}
+
+.rev-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.rev-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--purple), var(--accent2));
+}
+
+.rev-header {
+  padding: 28px 32px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rev-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.rev-formula {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-left: auto;
+}
+
+.rev-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+@media (max-width: 700px) { .rev-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.rev-item {
+  padding: 28px 24px;
+  border-right: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.rev-item:last-child { border-right: none; }
+.rev-item:hover { background: rgba(255,255,255,0.02); }
+
+.rev-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--item-color, var(--accent));
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.rev-item:hover::after { transform: scaleX(1); }
+
+.rev-scenario {
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.rev-usd {
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 4px;
+  color: var(--item-color, var(--accent));
+}
+
+.rev-bdt {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  color: var(--accent2);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.rev-note {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative;
+  z-index: 10;
+  border-top: 1px solid var(--border);
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-logo {
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 18px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-sep { color: var(--border); }
+
+.footer-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="wrap">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">RevForge Global — LTD Submission Hub</div>
+
+  <h1 class="hero-title">
+    <span class="line1">SOFTWARE</span>
+    <span class="line2">EMPIRE</span>
+  </h1>
+
+  <p class="hero-sub">50 Products · 5 Platforms · <em>Endless Revenue</em></p>
+
+  <div class="stat-row">
+    <div class="stat-pill">
+      <span class="stat-n">50</span>
+      <span class="stat-l">Products</span>
+    </div>
+    <div class="stat-pill">
+      <span class="stat-n">5</span>
+      <span class="stat-l">Platforms</span>
+    </div>
+    <div class="stat-pill">
+      <span class="stat-n">250</span>
+      <span class="stat-l">Listings</span>
+    </div>
+    <div class="stat-pill">
+      <span class="stat-n">$462K</span>
+      <span class="stat-l">Yearly Potential</span>
+    </div>
+    <div class="stat-pill">
+      <span class="stat-n">৳5.08Cr</span>
+      <span class="stat-l">BDT / Year</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION HEADER -->
+<div class="section-header">
+  <div class="sh-line"></div>
+  <div class="sh-text">// Target Platforms — Submit Now</div>
+  <div class="sh-line r"></div>
+</div>
+
+<!-- PLATFORM GRID -->
+<div class="grid">
+
+  <!-- #1 DealMirror — FULL WIDTH -->
+  <div class="card-1">
+    <a href="https://dealmirror.com/submit-a-deal" target="_blank" class="pcard gold">
+      <div class="rank-bg">01</div>
+      <div class="pcard-inner">
+        <div class="pcard-left">
+          <div class="badge gold"><div class="badge-dot"></div> #1 Priority — First Submit</div>
+          <div class="pname">DealMirror</div>
+          <div class="purl">dealmirror.com/submit-a-deal</div>
+          <div class="pdesc">The biggest active LTD alternative in 2026. Over 1 million customers across 82 countries. B2B SaaS perfect fit with multiple revenue share options. Strong seller communication and professional team. Start here — always.</div>
+          <div class="ptags">
+            <span class="ptag">1M+ Buyers</span>
+            <span class="ptag">82 Countries</span>
+            <span class="ptag">B2B Perfect</span>
+            <span class="ptag">Fast Approval</span>
+            <span class="ptag">Best Revenue Share</span>
+          </div>
+          <div class="pbtn">Submit Your Deal Now <span class="pbtn-arrow">→</span></div>
+        </div>
+        <div class="pcard-right">
+          <div class="card-stats">
+            <div class="cs-item"><div class="cs-n">1M+</div><div class="cs-l">Customers</div></div>
+            <div class="cs-item"><div class="cs-n">82</div><div class="cs-l">Countries</div></div>
+            <div class="cs-item"><div class="cs-n">4.7★</div><div class="cs-l">Trustpilot</div></div>
+            <div class="cs-item"><div class="cs-n">2016</div><div class="cs-l">Founded</div></div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- #2 Dealify -->
+  <div class="card-2">
+    <a href="https://dealify.com/sell" target="_blank" class="pcard silver">
+      <div class="rank-bg">02</div>
+      <div class="pcard-inner">
+        <div class="badge silver"><div class="badge-dot"></div> #2 Priority</div>
+        <div class="pname">Dealify</div>
+        <div class="purl">dealify.com/sell</div>
+        <div class="pdesc">Quality-focused marketplace built for growth hackers and marketers. Smaller catalog but highly targeted buyers. Clean 30-day refund guarantee across all deals builds trust fast.</div>
+        <div class="ptags">
+          <span class="ptag">Quality Buyers</span>
+          <span class="ptag">Growth Hackers</span>
+          <span class="ptag">30-Day Refund</span>
+        </div>
+        <div class="pbtn">Submit Deal <span class="pbtn-arrow">→</span></div>
+      </div>
+    </a>
+  </div>
+
+  <!-- #3 DealFuel -->
+  <div class="card-3">
+    <a href="https://dealfuel.com/submit-deal" target="_blank" class="pcard bronze">
+      <div class="rank-bg">03</div>
+      <div class="pcard-inner">
+        <div class="badge bronze"><div class="badge-dot"></div> #3 Priority</div>
+        <div class="pname">DealFuel</div>
+        <div class="purl">dealfuel.com/submit-deal</div>
+        <div class="pdesc">Developer and web professional focused. The strongest platform for dev tools, plugins, and technical software. Active since 2011 with loyal buyer base and 30-day refund on all deals.</div>
+        <div class="ptags">
+          <span class="ptag">Dev Tools</span>
+          <span class="ptag">Web Pro</span>
+          <span class="ptag">Since 2011</span>
+        </div>
+        <div class="pbtn">Submit Deal <span class="pbtn-arrow">→</span></div>
+      </div>
+    </a>
+  </div>
+
+  <!-- #4 RocketHub -->
+  <div class="card-4">
+    <a href="https://www.rockethub.com/submit" target="_blank" class="pcard blue">
+      <div class="rank-bg">04</div>
+      <div class="pcard-inner">
+        <div class="badge blue"><div class="badge-dot"></div> #4 Priority</div>
+        <div class="pname">RocketHub</div>
+        <div class="purl">rockethub.com/submit</div>
+        <div class="pdesc">Founder-friendly terms with better revenue share. 50K+ community of SaaS founders, agency owners and marketers. Fully managed deal process with hands-on marketing team.</div>
+        <div class="ptags">
+          <span class="ptag">50K Community</span>
+          <span class="ptag">Managed Deal</span>
+          <span class="ptag">Better Rev Share</span>
+        </div>
+        <div class="pbtn">Submit Deal <span class="pbtn-arrow">→</span></div>
+      </div>
+    </a>
+  </div>
+
+  <!-- #5 StackSocial -->
+  <div class="card-5">
+    <a href="https://stacksocial.com/sell" target="_blank" class="pcard teal">
+      <div class="rank-bg">05</div>
+      <div class="pcard-inner">
+        <div class="badge teal"><div class="badge-dot"></div> #5 Priority</div>
+        <div class="pname">StackSocial</div>
+        <div class="purl">stacksocial.com/sell</div>
+        <div class="pdesc">One of the oldest and largest deal platforms online. Partnered with Microsoft, Adobe and Parallels. Massive consumer audience ideal for software bundles and tech product collections.</div>
+        <div class="ptags">
+          <span class="ptag">Large Audience</span>
+          <span class="ptag">Since 2011</span>
+          <span class="ptag">Bundles</span>
+        </div>
+        <div class="pbtn">Submit Deal <span class="pbtn-arrow">→</span></div>
+      </div>
+    </a>
+  </div>
+
+</div>
+
+<!-- REVENUE PROJECTION -->
+<div class="section-header">
+  <div class="sh-line"></div>
+  <div class="sh-text">// Revenue Projection — 50 Software × 5 Platforms × $79</div>
+  <div class="sh-line r"></div>
+</div>
+
+<div class="rev-section">
+  <div class="rev-box">
+    <div class="rev-header">
+      <div class="rev-title">Yearly Revenue Potential</div>
+      <div class="rev-formula">250 listings × avg sales × $79 × 0.65</div>
+    </div>
+    <div class="rev-grid">
+      <div class="rev-item" style="--item-color: var(--muted);">
+        <div class="rev-scenario">Minimum</div>
+        <div class="rev-usd">$154K</div>
+        <div class="rev-bdt">৳1.69 Crore</div>
+        <div class="rev-note">1 sale / listing / month</div>
+      </div>
+      <div class="rev-item" style="--item-color: var(--accent);">
+        <div class="rev-scenario">Realistic</div>
+        <div class="rev-usd">$462K</div>
+        <div class="rev-bdt">৳5.08 Crore</div>
+        <div class="rev-note">3 sales / listing / month</div>
+      </div>
+      <div class="rev-item" style="--item-color: var(--gold);">
+        <div class="rev-scenario">Good</div>
+        <div class="rev-usd">$770K</div>
+        <div class="rev-bdt">৳8.47 Crore</div>
+        <div class="rev-note">5 sales / listing / month</div>
+      </div>
+      <div class="rev-item" style="--item-color: var(--accent2);">
+        <div class="rev-scenario">Best Case</div>
+        <div class="rev-usd">$1.54M</div>
+        <div class="rev-bdt">৳16.94 Crore</div>
+        <div class="rev-note">10 sales / listing / month</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">REVFORGE</div>
+    <span class="footer-sep">|</span>
+    <div class="footer-text">Build · Upload · Sell · Repeat</div>
+    <span class="footer-sep">|</span>
+    <div class="footer-text">Software Empire 2026</div>
+  </div>
+</footer>
+
+<script>
+// Particle system
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function Particle() {
+  this.x = Math.random() * W;
+  this.y = Math.random() * H;
+  this.vx = (Math.random() - 0.5) * 0.3;
+  this.vy = (Math.random() - 0.5) * 0.3;
+  this.r = Math.random() * 1.5 + 0.5;
+  this.alpha = Math.random() * 0.4 + 0.1;
+  this.color = Math.random() > 0.7 ? '0,255,204' : Math.random() > 0.5 ? '157,0,255' : '255,69,0';
+}
+
+function init() {
+  resize();
+  particles = [];
+  for (let i = 0; i < 80; i++) particles.push(new Particle());
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W;
+    if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H;
+    if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+    ctx.fill();
+  });
+  // Draw connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,255,204,${0.06 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize', init);
+init();
+draw();
+</script>
+</body>
+</html>
